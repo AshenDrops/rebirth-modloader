@@ -6,6 +6,7 @@ A Binding Of Isaac: Rebirth modloader
 *Modloader requires Python. You can download it [here](https://www.python.org/downloads/). The version you download doesn't matter as modloader is compatible with both.*  
   * Make sure to check "Add Python <version> to PATH"
 *Also requires rarfile -- I'm not 100% sure how you would install this on windows, but on OS X and Linux it's installed with `sudo pip install rarfile`*
+  * On Windows if you checked "Add Python to PATH" the command `pip install rarfile` should work.
 
 #Installation:  
 * Download [modload.py](https://raw.githubusercontent.com/AshenDrops/rebirth-modloader/master/modload.py) (Right click > Save as)
