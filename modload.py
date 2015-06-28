@@ -1,8 +1,9 @@
-#!/bin/python
+#!/bin/python3
 
 from sys import argv
-from zipfile import ZipFile
+from zipfile import ZipFile, ZIP_LZMA
 from rarfile import RarFile
+from lzma import LZMAFile
 from platform import system
 from subprocess import call
 from glob import glob
@@ -18,11 +19,15 @@ def safeExtract(zippath, filetype, resources):
                 return True
     
     # Ugly switch
-    if filetype == 'zip' or '7z':
-       zipfile=ZipFile(zippath)
-       if checkSafe(zipfile):
-           betterExtract(zipfile, resources)
-    elif filetype == 'rar':
+    if filetype == 'zip':
+        zipfile=ZipFile(zippath)
+        if checkSafe(zipfile):
+            betterExtract(zipfile, resources)
+    # elif filetype == '7z':
+    #     lzmafile=LZMAFile(zippath)
+    #     if checkSafe(lzmafile):
+    #         betterExtract(lzmafile, resources)
+    else:
         rarfile=RarFile(zippath)
         if checkSafe(rarfile):
             betterExtract(rarfile, resources)
@@ -40,49 +45,43 @@ def getResources():
         return path
 
 def cleanup(resources):
+    print('Cleaning Up')
     for directory in glob(resources+'*/'):
         if not 'packed' in directory and not 'mods' in directory:
+            print('Removed: ' + directory)
             rmtree(directory)
     for xmlfile in glob(resources+'*.xml'):
         os.remove(xmlfile)
+        print('Removed: ' + xmlfile)
 
 def betterExtract(zipfile, resources):
     for name in zipfile.namelist():
         print('Name: ' + name)
         if name.find('resources/') != -1 and name[-1] != '/':
             innerpath = name.split('resources/')[1].lower()
-            print('innerpath: '+innerpath)
-            print('resources: ' + resources)
             joined = resources + innerpath
             if not system() == 'Windows':
                 dirpath = '/'.join(joined.split('/')[:-1])
             else:
                 joined=joined.replace('/', '\\')
                 dirpath = '\\'.join(joined.split('\\')[:-1])
-            print('joined: ' + joined)
-            print('dirpath: ' + dirpath)
             if not os.path.exists(dirpath):
                 os.makedirs(dirpath)
             if os.path.exists(joined):
                 print('Mod incompatibility likely at \''+joined+'\'')
             with open(joined, 'wb') as wfile:
                 wfile.write(zipfile.read(name))
+                print('Loaded: ' + joined)
 
 def loadMods(resources):
     for archive in glob(resources+'mods/*'):
-        if '.zip' in archive or '.rar' in archive or '.7z' in archive:
+        if '.zip' in archive or '.rar' in archive:
             safeExtract(archive, archive.split('.')[-1], resources)
 
 def main():
     resources=getResources()
     loadMods(resources)
-    call(argv[1])
+    call(' '.join(argv[1:]))
     cleanup(resources)
 
-# Testing crap
-# cleanup(getResources())
-# betterExtract(ZipFile('/home/ashlynn/gayhearts.zip'), getResources())
-# betterExtract(ZipFile('/home/ashlynn/Downloads/splatoonedenhairstyles_1.0.zip'), getResources())
-# betterExtract(ZipFile('/home/ashlynn/Downloads/fate--lapislazuli_1.0.zip'), getResources())
-# loadMods(getResources())
 main()
