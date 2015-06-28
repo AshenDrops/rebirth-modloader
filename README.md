@@ -5,7 +5,7 @@ A Binding Of Isaac: Rebirth modloader
 
 #Installation:  
 * Download [modload.py](https://raw.githubusercontent.com/AshenDrops/rebirth-modloader/master/modload.py) (Right click > Save as)
-* Place modload.py in your "The Binding of Isaac" directory.
+* Place modload.py in your "resources" directory, found at
   * **Windows**: `C:\Program Files (x86)\Steam\SteamApps\common\The Binding of Isaac Rebirth\resources`
   * **OS X**: `<user>/Library/Application Support/Steam/SteamApps/common/The Binding of Isaac Rebirth/The Binding of Isaac Rebirth.app/Contents/Resources/resources`
     * You will have to right click "The Binding of Isaac Rebirth.app" and click "View Package Contents"
