@@ -3,7 +3,6 @@
 from sys import argv
 from zipfile import ZipFile, ZIP_LZMA
 from rarfile import RarFile
-from py7zlib import Archive7z
 from platform import system
 from subprocess import call
 from glob import glob
@@ -23,10 +22,10 @@ def safeExtract(zippath, filetype, resources):
         zipfile=ZipFile(zippath)
         if checkSafe(zipfile):
             betterExtract(zipfile, resources)
-    elif filetype == '7z':
-        lzmafile=Archive7z(open(zippath))
-        if checkSafe(lzmafile):
-            betterExtract(lzmafile, resources)
+    # elif filetype == '7z':
+    #     lzmafile=Archive7z(open(zippath))
+    #     if checkSafe(lzmafile):
+    #         betterExtract(lzmafile, resources)
     else:
         rarfile=RarFile(zippath)
         if checkSafe(rarfile):
@@ -54,6 +53,14 @@ def cleanup(resources):
         os.remove(xmlfile)
         print('Removed: ' + xmlfile)
 
+# def mergePlayers(file1, file2):
+    
+
+# def tryMerge(filename, file1, file2):
+#     if filename == 'players.xml':
+#         mergePlayers(file1, file2)
+
+
 def betterExtract(zipfile, resources):
     for name in zipfile.namelist():
         print('Name: ' + name)
@@ -69,13 +76,14 @@ def betterExtract(zipfile, resources):
                 os.makedirs(dirpath)
             if os.path.exists(joined):
                 print('Mod incompatibility likely at \''+joined+'\'')
+                # tryMerge
             with open(joined, 'wb') as wfile:
                 wfile.write(zipfile.read(name))
                 print('Loaded: ' + joined)
 
 def loadMods(resources):
     for archive in glob(resources+'mods/*'):
-        if '.zip' in archive or '.rar' in archive or '.7z' in archive:
+        if '.zip' in archive or '.rar' in archive:
             safeExtract(archive, archive.split('.')[-1], resources)
 
 def main():
