@@ -35,7 +35,7 @@ def safeExtract(zippath, filetype, resources):
 def getResources():
     path=''
     if system() == 'Darwin':
-        path=os.path.expanduser('~/Library/Application Support/Steam/SteamApps/common/The Binding of Isaac Rebirth/resources/')
+        path=os.path.expanduser('~/Library/Application Support/Steam/SteamApps/common/The Binding of Isaac Rebirth/The Binding of Isaac Rebirth.app/Contents/Resources/resources/')
     elif system() == 'Linux':
         path=os.path.expanduser('~/.steam/steam/steamapps/common/The Binding of Isaac Rebirth/resources/')
     elif system() == 'Windows':
