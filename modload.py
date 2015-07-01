@@ -107,14 +107,14 @@ def checkBaseDir(zipfile):
     for basename in zipfile.namelist():
         name = basename.replace('\\','/')
         if 'resources/' in name:
-            return ''
+            return ('', False)
         split = name.split('/')
         for filename in basefiles:
             if filename in split:
                 index = split.index(filename)
                 if index != -1 and index != 0:
-                    return split[index-1] + '/'
-    return ''
+                    return (split[index-1] + '/', True)
+    return ('', False)
 
 
 #Fancy and weird but basically just does a manual extract so I don't have to merge file trees in a weird way
@@ -123,14 +123,14 @@ def betterExtract(zipfile, resources):
         name = basename.replace('\\','/')
         print('Name: ' + name)
         spContinue = spCheck(zipfile)
-        basedir = checkBaseDir(zipfile)
-        if basedir != '':
+        basedir, basedirExists = checkBaseDir(zipfile)
+        if basedirExists:
             spContinue = False
-        if name[-1] != '/' and ( spContinue or name.find('resources/') != -1 or name.find(basedir) != -1 ):
+        if name[-1] != '/' and ( spContinue or name.find('resources/') != -1 or ( name.find(basedir) != -1 and basedirExists) ):
             innerpath = name.lower()
             if name.find('resources/') != -1:
                 innerpath = name.split('resources/')[1].lower()
-            if name.find(basedir) != -1:
+            if name.find(basedir) != -1 and basedirExists:
                 innerpath = name.split(basedir)[1].lower()
             joined = resources + innerpath
             if not system() == 'Windows':
