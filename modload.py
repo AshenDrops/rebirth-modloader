@@ -24,15 +24,12 @@ def safeExtract(zippath, filetype, resources):
         zipfile=ZipFile(zippath)
         if checkSafe(zipfile):
             betterExtract(zipfile, resources)
-    # elif filetype == '7z':
-    #     lzmafile=Archive7z(open(zippath))
-    #     if checkSafe(lzmafile):
-    #         betterExtract(lzmafile, resources)
     else:
         rarfile=RarFile(zippath)
         if checkSafe(rarfile):
             betterExtract(rarfile, resources)
 
+# Probably 90% wrong
 def getResources():
     path=''
     if system() == 'Darwin':
@@ -45,6 +42,7 @@ def getResources():
     if os.path.exists(path):
         return path
 
+# Removes every folder (besides packed and mods) and evert xml file in the resources directory
 def cleanup(resources):
     print('Cleaning Up')
     for directory in glob(resources+'*/'):
@@ -55,6 +53,7 @@ def cleanup(resources):
         os.remove(xmlfile)
         print('Removed: ' + xmlfile)
 
+# Preliminary merging code. Probably should move this to another file
 # def mergePlayers(file1, file2):
 
 
@@ -62,12 +61,22 @@ def cleanup(resources):
 #     if filename == 'players.xml':
 #         mergePlayers(file1, file2)
 
+# Check to see if any of the files have resources in their path or if they're meant to be placed directly in resources
+def spCheck(zipfile):
+    retVal = True
+    for basename in zipfile.namelist():
+        name = basename.replace('\\','/')
+        if 'resources/' in name:
+            retVal = False
+    return retVal
 
+#Fancy and weird but basically just does a manual extract so I don't have to merge file trees in a weird way
 def betterExtract(zipfile, resources):
     for basename in zipfile.namelist():
         name = basename.replace('\\','/')
         # print('Name: ' + name)
-        if name[-1] != '/':
+        spContinue = spCheck(zipfile)
+        if name[-1] != '/' and ( spContinue or name.find('resources/') != -1 ):
             innerpath = name.lower()
             if name.find('resources/') != -1:
                 innerpath = name.split('resources/')[1].lower()
@@ -86,9 +95,11 @@ def betterExtract(zipfile, resources):
                 with open(joined, 'wb') as wfile:
                     wfile.write(zipfile.read(basename))
             else:
+                # Exception because sometimes directories don't have a / after them especially in rar files
                 if not os.path.exists(joined):
                     os.makedirs(joined)
 
+# Callback from GUI interface
 def callback(arr):
     resources = getResources()
     for mod in arr:
@@ -96,6 +107,7 @@ def callback(arr):
         safeExtract(resources+'mods/'+mod, mod.split('.')[-1], resources)
     call(' '.join(argv[1:]))
 
+# Loads up that gui goodness
 def loadMods(resources):
     arr = []
     for archive in glob(resources+'mods/*'):
@@ -103,10 +115,12 @@ def loadMods(resources):
             arr.append(archive.split('/')[-1])
     ModSwapper('Asterne\'s Modloader', arr, callback).main()
 
+# Main
 def main():
     resources=getResources()
     if argv[1] != 'cleanup':
         loadMods(resources)
     cleanup(resources)
 
-main()
+if __name__ == '__main__':
+    main()
