@@ -74,7 +74,7 @@ def spCheck(zipfile):
 def betterExtract(zipfile, resources):
     for basename in zipfile.namelist():
         name = basename.replace('\\','/')
-        # print('Name: ' + name)
+        print('Name: ' + name)
         spContinue = spCheck(zipfile)
         if name[-1] != '/' and ( spContinue or name.find('resources/') != -1 ):
             innerpath = name.lower()
@@ -92,6 +92,7 @@ def betterExtract(zipfile, resources):
                 if os.path.exists(joined):
                     print('Conflict')
                     # tryMerge
+                print('Joined: ' + joined)
                 with open(joined, 'wb') as wfile:
                     wfile.write(zipfile.read(basename))
             else:
