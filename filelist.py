@@ -28,6 +28,26 @@ class ModSwapper:
         del self.window
         gtk.main_quit()
 
+    def up(self, widget, event, data=None):
+        paths = self.tvselection2.get_selected_rows()[1]
+        fstrpath = self.treemodel2.get_string_from_iter(self.treemodel2.get_iter(paths[0]))
+        try:
+            previter = self.treemodel2.get_iter_from_string(str(int(fstrpath)-1))
+            for path in paths:
+                self.treestore2.move_before(self.treemodel2.get_iter(path), previter)
+        except:
+            return False
+
+    def down(self, widget, event, data=None):
+        paths = self.tvselection2.get_selected_rows()[1]
+        lstrpath = self.treemodel2.get_string_from_iter(self.treemodel2.get_iter(paths[-1]))
+        try:
+            nextiter = self.treemodel2.get_iter_from_string(str(int(lstrpath)+1))
+            for path in reversed(paths):
+                self.treestore2.move_after(self.treemodel2.get_iter(path), nextiter)
+        except:
+            return False
+
     def add_items(self, widget, event, data=None):
         paths = self.tvselection.get_selected_rows()[1]
         for path in paths:
@@ -90,6 +110,8 @@ class ModSwapper:
         self.treeview.connect('cursor_changed', self.deselect2, None)
         self.treeview2.connect('cursor_changed', self.deselect, None)
 
+        self.treeview2.set_reorderable(False)
+
         self.cell = gtk.CellRendererText()
         self.cell2 = gtk.CellRendererText()
 
@@ -121,19 +143,32 @@ class ModSwapper:
         self.exitButton.connect('clicked', self.end, None)
         self.startButton.connect('clicked', self.start, None)
 
+        self.upButton = gtk.Button('^')
+        self.downButton = gtk.Button('v')
+        self.upButton.connect('clicked', self.up, None)
+        self.downButton.connect('clicked', self.down, None)
+
         self.treeview.append_column(self.tvcolumn)
         self.treeview2.append_column(self.tvcolumn2)
 
-        self.table = gtk.Table(rows=16, columns=21, homogeneous=True)
-        self.table.attach(self.treeview, 0, 10, 0, 15, xpadding=5,ypadding=5)
-        self.table.attach(self.treeview2, 11, 21, 0, 15, xpadding=5,ypadding=5)
-        self.table.attach(self.buttonR, 10, 11, 4, 6, xpadding=5,ypadding=5)
+        self.label = gtk.Label('Mods load from the top-down, so the last in the list get precedence.')
+
+        self.table = gtk.Table(rows=16, columns=22, homogeneous=True)
+        self.table.attach(self.treeview, 0, 10, 1, 15, xpadding=5,ypadding=5)
+        self.table.attach(self.treeview2, 11, 21, 1, 15, xpadding=5,ypadding=5)
+        self.table.attach(self.buttonR, 10, 11, 5, 7, xpadding=5,ypadding=5)
         self.table.attach(self.buttonL, 10, 11, 8, 10, xpadding=5,ypadding=5)
         self.table.attach(self.exitButton, 17, 19, 15, 16, xpadding=5,ypadding=5)
         self.table.attach(self.startButton, 19, 21, 15, 16, xpadding=5,ypadding=5)
+        self.table.attach(self.upButton, 21, 22, 1, 3, xpadding=5,ypadding=5)
+        self.table.attach(self.downButton, 21, 22, 3, 5, xpadding=5,ypadding=5)
+        self.table.attach(self.label, 0, 21, 0, 1, xpadding=5,ypadding=5)
 
         self.window.add(self.table)
         self.table.show()
+        self.label.show()
+        self.upButton.show()
+        self.downButton.show()
         self.exitButton.show()
         self.startButton.show()
         self.buttonL.show()
