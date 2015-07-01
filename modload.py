@@ -116,28 +116,40 @@ def checkBaseDir(zipfile):
                     return (split[index-1] + '/', True)
     return ('', False)
 
-
-#Fancy and weird but basically just does a manual extract so I don't have to merge file trees in a weird way
+# This code is a mess. I should probably fix it but I'm not even sure where to start
 def betterExtract(zipfile, resources):
     for basename in zipfile.namelist():
         name = basename.replace('\\','/')
         print('Name: ' + name)
+
+        # Handling for if root dir is resources
         spContinue = spCheck(zipfile)
+
+        # Handling for if differently named dir is resources
         basedir, basedirExists = checkBaseDir(zipfile)
         if basedirExists:
             spContinue = False
+
         if name[-1] != '/' and ( spContinue or name.find('resources/') != -1 or ( name.find(basedir) != -1 and basedirExists) ):
+            # lowercases everything
             innerpath = name.lower()
+
+            # splits path on resources or differently named resources
             if name.find('resources/') != -1:
                 innerpath = name.split('resources/')[1].lower()
-            if name.find(basedir) != -1 and basedirExists:
+            elif name.find(basedir) != -1 and basedirExists:
                 innerpath = name.split(basedir)[1].lower()
+
             joined = resources + innerpath
+
+            # Converts / to \ on Windows and gets "dirpath" for dir creation if necessary
             if not system() == 'Windows':
                 dirpath = '/'.join(joined.split('/')[:-1])
             else:
                 joined=joined.replace('/', '\\')
                 dirpath = '\\'.join(joined.split('\\')[:-1])
+
+            # If it's got a dot in it assume it's a file. Not really a good way to do this but eh
             if name.split('/')[-1].find('.') != -1:
                 if not os.path.exists(dirpath):
                     os.makedirs(dirpath)
@@ -166,6 +178,7 @@ def loadMods(resources):
     for archive in glob(resources+'mods/*'):
         if '.zip' in archive or '.rar' in archive:
             arr.append(archive.split('/')[-1])
+    # Good idea. Make it so refreshing in the gui is impossible.
     ModSwapper('Asterne\'s Modloader', arr, callback).main()
 
 # Main
