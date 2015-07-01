@@ -1,6 +1,8 @@
 # rebirth-modloader
 A Binding Of Isaac: Rebirth modloader
 
+# A lot of this is wrong. Please ignore it for the time being
+
 **Currently is not compatible with 7z files (or any files other than rar or zip for that matter)**
 
 *Modloader requires Python. You can download it [here](https://www.python.org/downloads/). The version you download doesn't matter as modloader is compatible with both.*
