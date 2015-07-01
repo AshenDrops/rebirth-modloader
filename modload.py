@@ -7,6 +7,7 @@ from platform import system
 from subprocess import call
 from glob import glob
 from shutil import rmtree
+from pprint import pprint
 import os
 
 from filelist import ModSwapper
@@ -102,6 +103,7 @@ def betterExtract(zipfile, resources):
 
 # Callback from GUI interface
 def callback(arr):
+    pprint(arr)
     resources = getResources()
     for mod in arr:
         print(resources+'mods/'+mod)
