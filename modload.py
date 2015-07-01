@@ -7,10 +7,42 @@ from platform import system
 from subprocess import call
 from glob import glob
 from shutil import rmtree
-from pprint import pprint
 import os
 
 from filelist import ModSwapper
+
+basefiles = [
+    'achievements.xml',
+    'ambush.xml',
+    'babies.xml',
+    'backdrops.xml',
+    'bosscolors.xml',
+    'bossportraits.xml',
+    'challenges.xml',
+    'costumes.xml',
+    'cutscenes.xml',
+    'entities2.xml',
+    'fortunes.txt',
+    'fxlayers.xml',
+    'giantbook.xml',
+    'itempools.xml',
+    'items.xml',
+    'music.xml',
+    'nightmares.xml',
+    'players.xml',
+    'pocketitems.xml',
+    'preload.xml',
+    'rules.txt',
+    'seeds.txt',
+    'sounds.xml',
+    'stages.xml',
+    'font',
+    'gfx',
+    'music',
+    'rooms',
+    'sfx',
+    'gfx'
+    ]
 
 # Make sure nothing explodes
 def safeExtract(zippath, filetype, resources):
@@ -71,16 +103,35 @@ def spCheck(zipfile):
             retVal = False
     return retVal
 
+def checkBaseDir(zipfile):
+    for basename in zipfile.namelist():
+        name = basename.replace('\\','/')
+        if 'resources/' in name:
+            return ''
+        split = name.split('/')
+        for filename in basefiles:
+            if filename in split:
+                index = split.index(filename)
+                if index != -1 and index != 0:
+                    return split[index-1] + '/'
+    return ''
+
+
 #Fancy and weird but basically just does a manual extract so I don't have to merge file trees in a weird way
 def betterExtract(zipfile, resources):
     for basename in zipfile.namelist():
         name = basename.replace('\\','/')
         print('Name: ' + name)
         spContinue = spCheck(zipfile)
-        if name[-1] != '/' and ( spContinue or name.find('resources/') != -1 ):
+        basedir = checkBaseDir(zipfile)
+        if basedir != '':
+            spContinue = False
+        if name[-1] != '/' and ( spContinue or name.find('resources/') != -1 or name.find(basedir) != -1 ):
             innerpath = name.lower()
             if name.find('resources/') != -1:
                 innerpath = name.split('resources/')[1].lower()
+            if name.find(basedir) != -1:
+                innerpath = name.split(basedir)[1].lower()
             joined = resources + innerpath
             if not system() == 'Windows':
                 dirpath = '/'.join(joined.split('/')[:-1])
@@ -103,7 +154,6 @@ def betterExtract(zipfile, resources):
 
 # Callback from GUI interface
 def callback(arr):
-    pprint(arr)
     resources = getResources()
     for mod in arr:
         print(resources+'mods/'+mod)
