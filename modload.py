@@ -1,4 +1,4 @@
-#!/bin/python3
+#!/bin/python2
 
 from sys import argv
 from zipfile import ZipFile
@@ -8,6 +8,8 @@ from subprocess import call
 from glob import glob
 from shutil import rmtree
 import os
+
+from filelist import ModSwapper
 
 # Make sure nothing explodes
 def safeExtract(zippath, filetype, resources):
@@ -30,15 +32,6 @@ def safeExtract(zippath, filetype, resources):
         rarfile=RarFile(zippath)
         if checkSafe(rarfile):
             betterExtract(rarfile, resources)
-
-def getLaunchCodes():
-    gamelaunch = 'steam://rungameid/250900'
-    if system() == 'Darwin':
-        path='idk'
-    elif system() == 'Linux':
-        path='/usr/bin/steam'
-    elif system() == 'Windows':
-        path='idk'
 
 def getResources():
     path=''
@@ -73,10 +66,11 @@ def cleanup(resources):
 def betterExtract(zipfile, resources):
     for basename in zipfile.namelist():
         name = basename.replace('\\','/')
-        print('Name: ' + name)
-        shouldContinue = True
-        if name.find('resources/') != -1 and name[-1] != '/':
-            innerpath = name.split('resources/')[1].lower()
+        # print('Name: ' + name)
+        if name[-1] != '/':
+            innerpath = name.lower()
+            if name.find('resources/') != -1:
+                innerpath = name.split('resources/')[1].lower()
             joined = resources + innerpath
             if not system() == 'Windows':
                 dirpath = '/'.join(joined.split('/')[:-1])
@@ -87,25 +81,32 @@ def betterExtract(zipfile, resources):
                 if not os.path.exists(dirpath):
                     os.makedirs(dirpath)
                 if os.path.exists(joined):
-                    print('Mod incompatibility likely at \''+joined+'\'')
+                    print('Conflict')
                     # tryMerge
                 with open(joined, 'wb') as wfile:
                     wfile.write(zipfile.read(basename))
-                    print('Loaded: ' + joined)
             else:
                 if not os.path.exists(joined):
                     os.makedirs(joined)
 
+def callback(arr):
+    resources = getResources()
+    for mod in arr:
+        print(resources+'mods/'+mod)
+        safeExtract(resources+'mods/'+mod, mod.split('.')[-1], resources)
+    call(' '.join(argv[1:]))
+
 def loadMods(resources):
+    arr = []
     for archive in glob(resources+'mods/*'):
         if '.zip' in archive or '.rar' in archive:
-            safeExtract(archive, archive.split('.')[-1], resources)
+            arr.append(archive.split('/')[-1])
+    ModSwapper('Asterne\'s Modloader', arr, callback).main()
 
 def main():
     resources=getResources()
     if argv[1] != 'cleanup':
         loadMods(resources)
-        call(' '.join(argv[1:]))
     cleanup(resources)
 
 main()
