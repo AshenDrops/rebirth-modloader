@@ -1,3 +1,5 @@
+#!/usr/bin/python2
+
 from pprint import pprint
 
 from modhandler import ModLoader
