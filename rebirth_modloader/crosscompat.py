@@ -16,7 +16,10 @@ elif system() == 'Darwin':
     CONFIGPATH = expanduser('~/Library/Application Support/')
 elif system() == 'Windows':
     SLASH = '\\'
-    RESPATH = 'C:\\Program Files (x86)\\Steam\\steamapps\\common\\The Binding of Isaac Rebirth\\resources\\'
+    RESPATH = 'C:\\Program Files (x86)\\Steam\\SteamApps\\common\\The Binding of Isaac Rebirth\\resources\\'
     CONFIGPATH = 'C:\\Program Files (x86)\\'
     WINDOWS = True
+else:
+    print('Not a recognized system. Quitting to avoid errors.')
+    exit()
 
