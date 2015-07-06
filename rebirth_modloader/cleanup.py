@@ -7,8 +7,9 @@ from crosscompat import RESPATH
 def clean():
     resources = RESPATH.replace('\\','/')
     for directory in glob(resources+'*'+'/'):
-        print('Removing: '+directory)
-        rmtree(directory)
+        if not 'packed/' in directory:
+            print('Removing: '+directory)
+            rmtree(directory)
     for xmlfile in glob(resources+'*.xml'):
         print('Removing: '+xmlfile)
         remove(xmlfile)
