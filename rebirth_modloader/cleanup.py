@@ -13,3 +13,6 @@ def clean():
     for xmlfile in glob(resources+'*.xml'):
         print('Removing: '+xmlfile)
         remove(xmlfile)
+    for animations_b in glob(resources+'*.b'):
+        print('Removing: '+animations_b)
+        remove(animations_b)
