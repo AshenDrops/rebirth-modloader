@@ -1,6 +1,8 @@
 # rebirth-modloader
 A Binding Of Isaac: Rebirth modloader
 
+### Windows version doesn't seem to be working right now. Haven't tested OS X yet. Linux is verified working, though.
+
 ## Installation Instructions
  - Download the latest [Release](https://github.com/AshenDrops/rebirth-modloader/releases) and follow the instructions for it.
  - Open up Steam

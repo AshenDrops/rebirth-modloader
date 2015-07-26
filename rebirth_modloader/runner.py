@@ -2,4 +2,7 @@ from subprocess import call
 from sys import argv
 
 def runGame():
-    call(' '.join(argv[1:]))
+    if(argv[1] != 'ssr-glinject'):
+        call(' '.join(argv[1:]))
+    else:
+        call(['ssr-glinject',' '.join(argv[2:])])
